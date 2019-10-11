@@ -58,11 +58,6 @@ public class ActivityUji extends AppCompatActivity {
                     }
                     Log.e("testAtribut",""+testAtribut.get(j));
                     dTs[i][p++]= new dataTest(Collections.singletonList(testAtribut.get(j)),Collections.singletonList(atributData.get(j).kelas.get(0)));
-//                    dTs[i][p++] = new dataTest(Collections.singletonList(testAtribut.get(j)), Collections.singletonList(atributData.get(j).kelas.get(0)));
-//                    dTest.get(i).get(p++).atribut.add(testAtribut.get(j));
-//                    dTest.get(i).get(p++).kelas.add(atributData.get(j).kelas.get(0));
-//                    dTest.get(i).get(p++).atribut.add(dTs[i][p++].atribut.get(0));
-//                    Log.e("dTest",String.valueOf(dTs[i][p++]));
                 } else {
                     if (trainAtribut.get(j).isEmpty()) {
                         for (int a = 0; a < 5; a++) {
@@ -70,14 +65,7 @@ public class ActivityUji extends AppCompatActivity {
                         }
                     }
                     dTr[i][q++] = new dataTrain(Collections.singletonList(trainAtribut.get(j)), Collections.<Integer>singletonList(Integer.valueOf(String.valueOf(atributData.get(j).kelas.get(0)))));
-//                    dTrain.get(i).add(dTr[i][q++]);
-//                    dTrain.get(i).get(q++).atribut.add(trainAtribut.get(j));
-//                    dTrain.get(i).get(q++).kelas.add(atributData.get(j).kelas.get(0));
                 }
-//                dTest.get(i).add(dTs[i][p]);
-//                p++;
-//                Log.w("dTest.atribut",""+dTest.get(i).get(p).atribut);
-//                Log.w("P",""+p);
             }
             for(int x=0; x<(end - start); x++){
                 dTest.add(new ArrayList<dataTest>());
@@ -91,27 +79,15 @@ public class ActivityUji extends AppCompatActivity {
                 dTrain.get(i).add(dTr[i][z]);
 //                Log.e("dTrain",""+dTrain.get(i).get(z).atribut);
             }
-//            dTest.get(i).add(dTs[i][x++]);
-//            for (int j = 0, p = 0, q = 0; j < n; j++) {
-//                dTest.add(new ArrayList<dataTest>());
-//                dTrain.add(new ArrayList<dataTrain>());
-//                if (j >= start && j < end) {
-//                    for (int a = 0; a < 5; a++){
-//                        dTest.get(i).get(p++).atribut.add(Collections.singletonList(dTs[i][p++].atribut.get(0).get(a)));
-//                    }
-//                    dTest.get(i).get(p++).kelas.add(dTs[i][p++].kelas.get(0));
-////                    Log.w("dTS",""+dTs[i][p++].atribut);
-//                    Log.w("dTest.atribut",""+dTest.get(i).get(p++).atribut);
-//                    Log.w("dTest.kelas",""+dTest.get(i).get(p++).kelas);
-//                }
-//            }
         }
 
         /*GET DISTANCE*/
         List<Double> distance = new ArrayList<>();
+        Integer[][] klsPrediksi = new Integer[fold][];
         int nilaiK = 3;
         List<Integer> kls = new ArrayList<>();
         for (int a = 0; a < fold; a++) {
+            klsPrediksi[a] = new Integer[5];
             for (int k = 0; k < chunk; k++) {
                 int kelasbaik = 0;
                 int kelasburuk = 0;
@@ -119,58 +95,55 @@ public class ActivityUji extends AppCompatActivity {
                     double hasilJD = jaccardDistance.getDistance(dTrain.get(a).get(i), dTest.get(a).get(k));
                     distance.add(hasilJD);
                     dTrain.get(a).get(i).distance = distance.get(i);
-//                    Log.e("==","=====");
-//                    Log.w("dTrain",String.valueOf(dTrain[a][i].atribut));
-//                    Log.w("dTest",String.valueOf(dTest[a][k].atribut));
                 }
-//                Log.e("distance MainActivity", "" + distance);
-                distance.clear();
-
 
                 /*COMPARE*/
-//                Arrays.sort(dTrain[a],dataTrain.dCompare);
                 Collections.sort(dTrain.get(a), dataTrain.dCompare);
-                Log.e("=====","====");
-                for (int i = 0; i < n-chunk; i++) {
+//                Log.e("=====","====");
+//                for (int i = 0; i < n-chunk; i++) {
 //                    Log.w("sorting", "" + dTrain.get(a).get(i).distance);
-                }
+//                }
 
-                for (int i = 0; i < nilaiK; i++) {
+                for (int j = 0; j < nilaiK; j++) {
 //                    Log.e("kelas", "" + dTrain.get(a).get(i).kelas + dTrain.get(a).get(i).distance);
-                    if (dTrain.get(a).get(i).kelas.get(0) == 0) {
+                    if (dTrain.get(a).get(j).kelas.get(0) == 0) {
                         kelasbaik++;
-                    } else if (dTrain.get(a).get(i).kelas.get(0) == 1) {
+                    } else if (dTrain.get(a).get(j).kelas.get(0) == 1) {
                         kelasburuk++;
                     }
-                    if (kelasbaik > kelasburuk) {
-                        kls.add(0);
-                    } else if (kelasbaik < kelasburuk) {
-                        kls.add(1);
+                }
+                /*TP TN FP FN*/
+                if (kelasbaik < kelasburuk) {
+                    if (dTest.get(a).get(k).kelas.get(0) == 1){
+                        trueNv++;
+                        klsPrediksi[a][k] = bahaya;
+                        dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
+                    }
+                    else if(dTest.get(a).get(k).kelas.get(0) == 0) {
+                        falsePv++;
+                        klsPrediksi[a][k] = bahaya;
+                        dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
                     }
 
-                    /*TP TN FP FN*/
-                    if (kls.get(a) == 1){
-                        Log.w("dTestKelas",""+dTest.get(a).get(i).kelas);
-                        if (dTest.get(a).get(i).kelas.get(0) == 1){
-                            trueNv++;
-                        }
-                        else if(dTest.get(a).get(i).kelas.get(0) == 0) {
-                            falseNv++;
-                        }
-
+                }
+                else if (kelasbaik > kelasburuk) {
+                    if (dTest.get(a).get(k).kelas.get(0) == 0){
+                        truePv++;
+                        klsPrediksi[a][k] = aman;
+                        dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
                     }
-                    else if (kls.get(a) == 0){
-                        if (dTest.get(a).get(i).kelas.get(0) == 0){
-                            truePv++;
-                        }
-                        else if(dTest.get(a).get(i).kelas.get(0) == 1) {
-                            falsePv++;
-                        }
+                    else if(dTest.get(a).get(k).kelas.get(0) == 1) {
+                        falseNv++;
+                        klsPrediksi[a][k] = aman;
+                        dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
                     }
                 }
+                dTrain.remove(distance);
+                distance.clear();
+                Log.e("===","===");
+                Log.w("Kelas Real",""+dTest.get(a).get(k).kelas);
+                Log.w("Kelas Prediksi",""+dTest.get(a).get(k).kelasPrediksi);
             }
-            Log.w("TP,TN,FP,FN",""+truePv +trueNv +falsePv +falseNv);
-            Log.w("kls",""+kls);
         }
 
         /*TAMPILAN*/
