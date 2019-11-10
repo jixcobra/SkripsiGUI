@@ -5,8 +5,8 @@ import java.util.List;
 
 public class dataTrain extends dataSet {
     double distance;
-    public dataTrain(List<List<Integer>> atribut, List<Integer> kelas) {
-        super(atribut, kelas);
+    public dataTrain(List<List<Integer>> atribut, List<Integer> kelas, List<String> packageName) {
+        super(atribut, kelas, packageName);
     }
 
     public double getDistance() {

@@ -1,7 +1,9 @@
 package com.example.deteksi;
 
 import android.util.Log;
+
 import com.opencsv.CSVReader;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,20 +12,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class readData {
+public class readFile {
     InputStream inputStream;
-    public readData(InputStream inputStream){
+    public readFile(InputStream inputStream){
         this.inputStream = inputStream;
     }
     String[] data;
-    dataSet[] dSet = new dataSet[200];
-    ArrayList<dataSet> dSetList = new ArrayList<>();
+    fileTest[] fTes = new fileTest[1];
+    ArrayList<fileTest> fTestList = new ArrayList<>();
     List<List<Integer>> listAtribut = new ArrayList<List<Integer>>();
-    List<Integer> listKelas = new ArrayList<>();
     List<String> listPackage = new ArrayList<>();
 
     /*READ DATA*/
-    public ArrayList<dataSet> readAtribut(){
+    public ArrayList<fileTest> readAtribut(){
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         CSVReader csvReader = new CSVReader(reader);
         try {
@@ -33,12 +34,11 @@ public class readData {
                 for (int i=0; i<20; i++){
                     listAtribut.get(a).add(Integer.parseInt(data[i]));
                 }
-                listKelas.add(new Integer(data[20]));
-                listPackage.add(data[21]);
+                listPackage.add(data[20]);
 
-                dSet[a] = new dataSet(Collections.singletonList(listAtribut.get(a)), Collections.singletonList(listKelas.get(a)), Collections.singletonList(listPackage.get(a)));
-                dSetList.add(dSet[a]);
-//                Log.w("dset",""+dSet[a].kelas);
+                fTes[a] = new fileTest(Collections.singletonList(listAtribut.get(a)), Collections.singletonList(listPackage.get(a)));
+                fTestList.add(fTes[a]);
+//                Log.w("dset",""+fTes[a]);
                 a++;
             }
         }
@@ -46,6 +46,6 @@ public class readData {
             Log.e("Error","Read Data pada class readData error");
         }
 
-        return dSetList;
+        return fTestList;
     }
 }

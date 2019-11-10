@@ -2,8 +2,8 @@ package com.example.deteksi;
 
 import android.util.Log;
 
-public class jaccardDistance {
-    public static double getDistance(dataTrain tr, dataTest ts){
+public class jaccard2 {
+    public static double getDistance(dataSet tr, fileTest ts){
         int p = 0;
         int q = 0;
         int r = 0;
