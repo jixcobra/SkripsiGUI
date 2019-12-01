@@ -1,11 +1,11 @@
 package com.example.deteksi;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.InputStream;
@@ -15,6 +15,10 @@ import java.util.List;
 
 public class ActivityUji extends AppCompatActivity {
 
+    public static ArrayList<detail> detailArrayList;
+
+    detail detil;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +26,7 @@ public class ActivityUji extends AppCompatActivity {
 
         InputStream inputData = getResources().openRawResource(R.raw.dataset1);
         readData readData = new readData(inputData);
+        detailArrayList = new ArrayList<>();
         ArrayList<dataSet> atributData = readData.readAtribut();
         int truePv = 0, trueNv = 0, falsePv = 0, falseNv = 0, akurasi;
         Integer bahaya=1, aman=0;
@@ -36,6 +41,7 @@ public class ActivityUji extends AppCompatActivity {
         int n = atributData.size();
         Log.w("length", String.valueOf(n));
         int fold = 10;
+        Collections.shuffle(atributData);
         dataTrain[][] dTr = new dataTrain[fold][];
         dataTest[][] dTs = new dataTest[fold][];
         ArrayList<ArrayList<dataTrain>> dTrain = new ArrayList<ArrayList<dataTrain>>(fold);
@@ -60,7 +66,7 @@ public class ActivityUji extends AppCompatActivity {
                         testAtribut.get(j).add(Integer.parseInt(String.valueOf(atributData.get(j).atribut.get(0).get(a))));
 //                        Log.e("testAtribut",""+testAtribut.get(j));
                     }
-                    Log.e("testAtribut",""+testAtribut.get(j));
+//                    Log.e("testAtribut",""+testAtribut.get(j));
                     dTs[i][p++]= new dataTest(Collections.singletonList(testAtribut.get(j)),Collections.singletonList(atributData.get(j).kelas.get(0)),Collections.singletonList(atributData.get(j).packageName.get(0)));
                 } else {
                     if (trainAtribut.get(j).isEmpty()) {
@@ -122,33 +128,38 @@ public class ActivityUji extends AppCompatActivity {
                         trueNv++;
                         klsPrediksi[a][k] = bahaya;
                         dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
+                        detailArrayList.add(new detail(""+dTest.get(a).get(k).packageName.get(0),"Malware","Malware"));
                     }
                     else if(dTest.get(a).get(k).kelas.get(0) == 0) {
                         falsePv++;
                         klsPrediksi[a][k] = bahaya;
                         dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
+                        detailArrayList.add(new detail(""+dTest.get(a).get(k).packageName.get(0),"Aman","Malware"));
                     }
-
                 }
+
                 else if (kelasbaik > kelasburuk) {
                     if (dTest.get(a).get(k).kelas.get(0) == 0){
                         truePv++;
                         klsPrediksi[a][k] = aman;
                         dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
+                        detailArrayList.add(new detail(""+dTest.get(a).get(k).packageName.get(0),"Aman","Aman"));
                     }
                     else if(dTest.get(a).get(k).kelas.get(0) == 1) {
                         falseNv++;
                         klsPrediksi[a][k] = aman;
                         dTest.get(a).get(k).kelasPrediksi = klsPrediksi[a][k];
+                        detailArrayList.add(new detail(""+dTest.get(a).get(k).packageName.get(0),"Malware","Aman"));
                     }
                 }
 
                 dTrain.remove(distance);
                 distance.clear();
-                Log.e("===","===");
-                Log.w("package Name",""+dTest.get(a).get(k).packageName);
-                Log.w("Kelas Real",""+dTest.get(a).get(k).kelas);
-                Log.w("Kelas Prediksi",""+dTest.get(a).get(k).kelasPrediksi);
+//                Log.e("===","===");
+//                Log.w("package Name",""+dTest.get(a).get(k).packageName);
+//                Log.w("Kelas Real",""+dTest.get(a).get(k).kelas);
+//                Log.w("Kelas Prediksi",""+dTest.get(a).get(k).kelasPrediksi);
+//                Log.w("detail Array List",""+detailArrayList.get(a).getPackageName() +detailArrayList.get(a).getRealClass() +detailArrayList.get(a).getDetectClass());
             }
         }
 
@@ -162,6 +173,14 @@ public class ActivityUji extends AppCompatActivity {
         TextView fp = findViewById(R.id.falsePositive);
         TextView fn = findViewById(R.id.falseNegative);
         TextView akrs = findViewById(R.id.akurasi);
+        Log.w("TP",""+truePv);
+        Log.w("TN",""+trueNv);
+        Log.w("FP",""+falsePv);
+        Log.w("FN",""+falseNv);
+        Log.w("Akurasi",""+akurasi);
+
+
+
 //        final ListView mListView = (ListView) findViewById(R.id.List);
 
         tp.setText(String.valueOf(truePv));
@@ -173,16 +192,9 @@ public class ActivityUji extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-//                final Dialog dialog = new Dialog(ActivityUji.this);
-//                dialog.setContentView(R.layout.list_view);
-//                dialog.setTitle("Title...");
-//                myNames= (ListView) dialog.findViewById(R.id.List);
-//                adapter = new Adapter(ActivityUji.this,R.layout.names_view, Current.Names);
-//                myNames.setAdapter(adapter);
-//                dialog.show();
-
-//                detailAdapter adapter = new detailAdapter(this, R.layout.adapter_view_layout, dTest);
-//                mListView.setAdapter(adapter);
+                Intent pindah = new Intent(ActivityUji.this, ActivityDetail.class);
+                pindah.putParcelableArrayListExtra("detailArrayList",detailArrayList);
+                startActivity(pindah);
             }
         });
     }

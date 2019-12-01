@@ -34,7 +34,6 @@ public class ActivityDeteksi extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
     private static final int READ_EXTERNAL_DATA = 24;
     private static final int PERMISSION_REQUEST_CODE = 100;
-
     private Button btAdd;
     private TextView tvNamaData;
 
@@ -84,7 +83,7 @@ public class ActivityDeteksi extends AppCompatActivity {
                     String path = uri.getPath();
                     int sub = path.indexOf(":");
                     String simplePath = path.substring(sub + 1);
-                    tvNamaData.setText(simplePath);
+                    Toast.makeText(this, ""+simplePath, Toast.LENGTH_SHORT).show();
                     klasifikasi(simplePath);
                 }
             }
